@@ -388,7 +388,9 @@
 
   <div id="systemArea">
     <label>OpenGemini Tarzı</label>
-    <textarea id="systemPrompt" placeholder="Botun kişiliği...">Samimi, üretken yapay zeka modeli. Resim çizmek için "çiz: açıklama" yazınız.</textarea>
+    <div id="systemPromptDisplay" style="flex: 1; background: transparent; border: none; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 0.78rem; line-height: 1.5; user-select: none; padding: 0;">Samimi, üretken yapay zeka modeli. Resim çizmek için "çiz: açıklama" yazınız.</div>
+    <textarea id="systemPrompt" style="display: none;">Samimi, üretken yapay zeka modeli. Resim çizmek için "çiz: açıklama" yazınız.</textarea>
+    <button id="editSystemBtn" onclick="toggleEditSystem()" title="Kişiliği düzenle" style="background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 0.45rem 0.6rem; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 0.65rem; cursor: pointer; white-space: nowrap;">✏️</button>
   </div>
 
   <div id="chat">
@@ -426,9 +428,31 @@
   let history = [];
   let uploadedFile = null;
   let uploadedFileBase64 = null;
+  let isEditingSystem = false;
 
   if (apiKey) {
     document.getElementById('apiKey').value = '••••••••••••••••••••';
+  }
+
+  function toggleEditSystem() {
+    isEditingSystem = !isEditingSystem;
+    const display = document.getElementById('systemPromptDisplay');
+    const textarea = document.getElementById('systemPrompt');
+    const btn = document.getElementById('editSystemBtn');
+    
+    if (isEditingSystem) {
+      display.style.display = 'none';
+      textarea.style.display = 'block';
+      textarea.focus();
+      btn.textContent = '✓';
+      btn.style.background = '#4ade80';
+    } else {
+      textarea.style.display = 'none';
+      display.textContent = textarea.value;
+      display.style.display = 'block';
+      btn.textContent = '✏️';
+      btn.style.background = 'var(--accent)';
+    }
   }
 
   function saveKey() {
@@ -624,10 +648,10 @@
           body: JSON.stringify({
             contents: [{
               parts: [{
-                text: `Sen bir sanat ustasısın. "${prompt}" için detaylı bir SVG çiz. SADECE <svg>...</svg> çık, başka hiçbir metin yazma!`
+                text: `"${prompt}" için SVG resmi çiz. SADECE <svg>...</svg> kodu yaz, başka metin yazma!`
               }]
             }],
-            generationConfig: { maxOutputTokens: 4096 }
+            generationConfig: { maxOutputTokens: 4096, temperature: 0.9 }
           })
         }
       );
@@ -644,9 +668,8 @@
         if (svgMatch) {
           const svgData = 'data:image/svg+xml;base64,' + btoa(svgMatch[0]);
           addMsg('bot', { type: 'image', data: svgData });
-          addMsg('bot', '✨ Resim tamam!');
         } else {
-          addMsg('bot', '❌ SVG oluşturulamadı, daha basit bir açıklama dene.');
+          addMsg('bot', '❌ SVG oluşturulamadı');
         }
       }
     } catch (err) {
@@ -654,10 +677,4 @@
       addMsg('bot', '❌ Hata: ' + err.message);
     }
 
-    document.getElementById('sendBtn').disabled = false;
-    document.getElementById('fileBtn').disabled = false;
-    inputEl.focus();
-  }
-</script>
-</body>
-</html>
+  
