@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OpenGemini 2.5 Flash by xcore</title>
+  <title>OpenGemini 2.5F-unlimited</title>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -375,7 +375,7 @@
     <div class="logo">✦∞</div>
     <div>
       <h1>OpenGemini✦∞ Project by xcore</h1>
-      <p>gemini-2.5-flash ✦ · limitsiz</p>
+      <p>opengemini-2.5-flash · limitsiz</p>
     </div>
     <div class="status-dot"><div class="dot"></div> aktif</div>
   </header>
@@ -387,8 +387,8 @@
   </div>
 
   <div id="systemArea">
-    <label>OpenGemini Tarzı</label>
-    <textarea id="systemPrompt" placeholder="OpenGemini Tarzı">Samimi, yardımsever ve üretken bir OpenGemini modeli. Resim çizmek için "çiz: açıklama" yazınız.</textarea>
+    <label>Sistem</label>
+    <textarea id="systemPrompt" placeholder="OpenGemini Tarzı">Samimi, üretken yapay zeka modeli. Resim çizmek için "çiz: açıklama" yazınız.</textarea>
   </div>
 
   <div id="chat">
@@ -458,7 +458,7 @@
     }
 
     uploadedFile = file;
-    const reader = new FileReader()w;
+    const reader = new FileReader();
     reader.onload = (event) => {
       uploadedFileBase64 = event.target.result;
       document.getElementById('userInput').placeholder = `📎 ${file.name} yüklendi`;
@@ -481,7 +481,7 @@
     document.getElementById('emptyState')?.remove();
     const div = document.createElement('div');
     div.className = `msg ${role}`;
-    const avatar = role === 'bot' ? '✦∞' : '📨';
+    const avatar = role === 'bot' ? '🎨' : '👤';
     
     let bubbleHTML = '';
     if (typeof content === 'string') {
