@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OpenGemini 2.5F-L</title>
+  <title>OpenGemini 2.5 Flash by xcore</title>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -14,7 +14,6 @@
       --card:      #faf8f5;
       --border:    #d4cfc8;
       --accent:    #1a6b4a;
-      --accent2:   #e8622a;
       --text:      #1c1a17;
       --muted:     #8a8278;
       --user-bg:   #1a6b4a;
@@ -49,7 +48,6 @@
       border: 1px solid var(--border);
     }
 
-    /* ── HEADER ── */
     header {
       background: var(--text);
       color: var(--bg);
@@ -103,7 +101,6 @@
       50% { opacity: 0.3; }
     }
 
-    /* ── API SETUP ── */
     #apiSetup {
       background: #fffbf7;
       border-bottom: 1px solid var(--border);
@@ -112,6 +109,7 @@
       gap: 0.5rem;
       align-items: center;
       flex-shrink: 0;
+      flex-wrap: wrap;
     }
 
     #apiSetup label {
@@ -125,6 +123,7 @@
 
     #apiKey {
       flex: 1;
+      min-width: 150px;
       background: var(--bg);
       border: 1.5px solid var(--border);
       border-radius: 8px;
@@ -152,7 +151,6 @@
     }
     #saveBtn:hover { opacity: 0.85; }
 
-    /* ── SYSTEM PROMPT ── */
     #systemArea {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
@@ -185,7 +183,6 @@
       line-height: 1.5;
     }
 
-    /* ── CHAT ── */
     #chat {
       flex: 1;
       overflow-y: auto;
@@ -198,7 +195,6 @@
       scrollbar-color: var(--border) transparent;
     }
 
-    /* Empty state */
     .empty {
       flex: 1;
       display: flex;
@@ -220,7 +216,6 @@
     }
     .empty span { font-size: 0.8rem; line-height: 1.6; }
 
-    /* Messages */
     .msg {
       display: flex;
       gap: 0.6rem;
@@ -233,11 +228,7 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    .msg.user {
-      align-self: flex-end;
-      flex-direction: row-reverse;
-    }
-
+    .msg.user { align-self: flex-end; flex-direction: row-reverse; }
     .msg.bot { align-self: flex-start; }
 
     .avatar {
@@ -274,7 +265,24 @@
       border-bottom-right-radius: 4px;
     }
 
-    /* Typing dots */
+    .bubble img, .bubble video {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-top: 0.5rem;
+    }
+
+    .file-badge {
+      display: inline-block;
+      background: #e8f5e9;
+      color: #1b5e20;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace;
+      margin-top: 0.3rem;
+    }
+
     .typing-dots span {
       display: inline-block;
       width: 6px; height: 6px;
@@ -291,7 +299,6 @@
       40%           { opacity: 1;   transform: scale(1.1); }
     }
 
-    /* ── INPUT BAR ── */
     #inputBar {
       background: var(--card);
       border-top: 1px solid var(--border);
@@ -321,7 +328,7 @@
     #userInput:focus { border-color: var(--accent); }
     #userInput::placeholder { color: var(--muted); }
 
-    #sendBtn {
+    #fileBtn, #sendBtn {
       width: 44px; height: 44px;
       background: var(--accent);
       color: #fff;
@@ -332,12 +339,15 @@
       flex-shrink: 0;
       transition: background 0.2s, transform 0.1s;
     }
-    #sendBtn:hover  { background: #155c3e; }
-    #sendBtn:active { transform: scale(0.94); }
-    #sendBtn:disabled { background: var(--border); cursor: not-allowed; }
-    #sendBtn svg { width: 18px; height: 18px; }
+    #fileBtn:hover, #sendBtn:hover { background: #155c3e; }
+    #fileBtn:active, #sendBtn:active { transform: scale(0.94); }
+    #fileBtn:disabled, #sendBtn:disabled { background: var(--border); cursor: not-allowed; }
+    #fileBtn svg, #sendBtn svg { width: 18px; height: 18px; }
 
-    /* Keyboard hint */
+    #fileInput {
+      display: none;
+    }
+
     .hint {
       text-align: center;
       font-size: 0.65rem;
@@ -349,7 +359,6 @@
       flex-shrink: 0;
     }
 
-    /* Saved badge */
     .saved-badge {
       display: inline-flex; align-items: center; gap: 4px;
       background: #dcfce7; color: #166534;
@@ -362,44 +371,46 @@
 <body>
 <div class="wrapper">
 
-  <!-- HEADER -->
   <header>
-    <div class="logo">✦∞</div>
+    <div class="logo">🎨</div>
     <div>
-      <h1>OpenGemini Project by xcore∞</h1>
-      <p>gemini-2.5-flash-lite · ücretsiz</p>
+      <h1>OpenGemini✦∞ Project by xcore</h1>
+      <p>gemini-2.5-flash ✦ · limitsiz</p>
     </div>
     <div class="status-dot"><div class="dot"></div> aktif</div>
   </header>
 
-  <!-- API KEY -->
   <div id="apiSetup">
     <label>API</label>
-    <input type="password" id="apiKey" placeholder="Gemini API anahtarını gir..." autocomplete="off" />
+    <input type="password" id="apiKey" placeholder="Gemini API key" autocomplete="off" />
     <button id="saveBtn" onclick="saveKey()">Kaydet</button>
   </div>
 
-  <!-- SYSTEM PROMPT -->
   <div id="systemArea">
-    <label>OpenGemini Tarzı</label>
-    <textarea id="systemPrompt" placeholder="Botun kişiliği...">Samimi, yardımsever ve zeki bir Türkçe sohbet asistanı.</textarea>
+    <label>Sistem</label>
+    <textarea id="systemPrompt" placeholder="OpenGemini Tarzı">Samimi, yardımsever ve üretken bir OpenGemini modeli. Resim çizmek için "çiz: açıklama" yazınız.</textarea>
   </div>
 
-  <!-- CHAT -->
   <div id="chat">
     <div class="empty" id="emptyState">
       <div class="icon">✦∞</div>
-      <strong>Merhaba!</strong>
-      <span>API anahtarını gir ve sohbete başla.<br/>aistudio.google.com → Get API Key</span>
+      <strong>OpenGemini</strong>
+      <span>API key gir (aistudio.google.com) ya da AIzaSyBWpO-uxLU7pRRn5yNegjLvlkS4FuaaSHk bu kodu kullan.<br/>Dosya upload + sohbet + resim çiz</span>
     </div>
   </div>
 
-  <!-- HINT -->
-  <div class="hint">Enter = gönder &nbsp;·&nbsp; Shift+Enter = yeni satır</div>
+  <div class="hint">Enter = gönder · Upload = ⬆️ · çiz: açıklama = resim</div>
 
-  <!-- INPUT -->
   <div id="inputBar">
-    <textarea id="userInput" placeholder="Mesajını yaz..." rows="1"></textarea>
+    <input type="file" id="fileInput" accept=".pdf,.txt,.jpg,.png,.jpeg,.gif,.docx,.mp4" />
+    <button id="fileBtn" onclick="document.getElementById('fileInput').click()" title="Dosya upload">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="17 8 12 3 7 8"/>
+        <line x1="12" y1="3" x2="12" y2="15"/>
+      </svg>
+    </button>
+    <textarea id="userInput" placeholder="Mesaj yaz... (dosya uploaded)" rows="1"></textarea>
     <button id="sendBtn" onclick="sendMessage()" title="Gönder">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="22" y1="2" x2="11" y2="13"/>
@@ -411,16 +422,15 @@
 </div>
 
 <script>
-  // ── State ──
   let apiKey = localStorage.getItem('gemini_key') || '';
-  let history = []; // [{role, parts: [{text}]}]
+  let history = [];
+  let uploadedFile = null;
+  let uploadedFileBase64 = null;
 
-  // Restore key display
   if (apiKey) {
     document.getElementById('apiKey').value = '••••••••••••••••••••';
   }
 
-  // ── Save API Key ──
   function saveKey() {
     const val = document.getElementById('apiKey').value.trim();
     if (!val || val.startsWith('•')) return;
@@ -428,7 +438,6 @@
     localStorage.setItem('gemini_key', apiKey);
     document.getElementById('apiKey').value = '••••••••••••••••••••';
 
-    // Show success badge
     const setup = document.getElementById('apiSetup');
     const badge = document.createElement('span');
     badge.className = 'saved-badge';
@@ -437,7 +446,26 @@
     setTimeout(() => badge.remove(), 2000);
   }
 
-  // ── Input auto-resize ──
+  // File upload handler
+  document.getElementById('fileInput').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const maxSize = 20 * 1024 * 1024; // 20MB
+    if (file.size > maxSize) {
+      alert('Dosya çok büyük! (Max 20MB)');
+      return;
+    }
+
+    uploadedFile = file;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      uploadedFileBase64 = event.target.result;
+      document.getElementById('userInput').placeholder = `📎 ${file.name} yüklendi`;
+    };
+    reader.readAsDataURL(file);
+  });
+
   const inputEl = document.getElementById('userInput');
   inputEl.addEventListener('input', () => {
     inputEl.style.height = 'auto';
@@ -447,20 +475,26 @@
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   });
 
-  // ── Add message to chat ──
   const chatEl = document.getElementById('chat');
 
-  function addMsg(role, text) {
+  function addMsg(role, content) {
     document.getElementById('emptyState')?.remove();
     const div = document.createElement('div');
     div.className = `msg ${role}`;
-    const avatar = role === 'bot' ? '✦' : '👤';
-    div.innerHTML = `
-      <div class="avatar">${avatar}</div>
-      <div class="bubble">${escHtml(text)}</div>`;
+    const avatar = role === 'bot' ? '🎨' : '👤';
+    
+    let bubbleHTML = '';
+    if (typeof content === 'string') {
+      bubbleHTML = `<div class="bubble">${escHtml(content)}</div>`;
+    } else if (content.type === 'image') {
+      bubbleHTML = `<div class="bubble"><img src="${content.data}" alt="Generated" style="max-width: 280px;" /></div>`;
+    } else if (content.type === 'file') {
+      bubbleHTML = `<div class="bubble"><div class="file-badge">📎 ${content.name}</div></div>`;
+    }
+    
+    div.innerHTML = `<div class="avatar">${avatar}</div>${bubbleHTML}`;
     chatEl.appendChild(div);
     chatEl.scrollTop = chatEl.scrollHeight;
-    return div;
   }
 
   function addTyping() {
@@ -468,7 +502,7 @@
     const div = document.createElement('div');
     div.id = 'typing';
     div.className = 'msg bot';
-    div.innerHTML = `<div class="avatar">✦</div><div class="bubble typing-dots"><span></span><span></span><span></span></div>`;
+    div.innerHTML = `<div class="avatar">🎨</div><div class="bubble typing-dots"><span></span><span></span><span></span></div>`;
     chatEl.appendChild(div);
     chatEl.scrollTop = chatEl.scrollHeight;
   }
@@ -481,23 +515,57 @@
       .replace(/\n/g,'<br>');
   }
 
-  // ── Send Message ──
   async function sendMessage() {
     const text = inputEl.value.trim();
-    if (!text) return;
+    
+    if (!text && !uploadedFile) return;
     if (!apiKey) {
-      alert('⚠️ Önce Gemini API anahtarını gir!\naistudio.google.com adresinden ücretsiz alabilirsin.');
+      alert('⚠️ API key gir! aistudio.google.com');
       return;
     }
 
-    // Reset input
+    // Check for draw command
+    const drawMatch = text.match(/^çiz:\s*(.+)/i);
+    if (drawMatch) {
+      await generateImage(drawMatch[1].trim());
+      return;
+    }
+
     inputEl.value = '';
     inputEl.style.height = 'auto';
     document.getElementById('sendBtn').disabled = true;
+    document.getElementById('fileBtn').disabled = true;
 
-    // Add to UI and history
-    addMsg('user', text);
-    history.push({ role: 'user', parts: [{ text }] });
+    // Add user message
+    if (text) addMsg('user', text);
+    if (uploadedFile) addMsg('user', { type: 'file', name: uploadedFile.name });
+
+    // Build message parts
+    const messageParts = [];
+    
+    if (uploadedFile) {
+      const mimeType = uploadedFile.type || 'application/octet-stream';
+      const base64Data = uploadedFileBase64.split(',')[1];
+      messageParts.push({
+        inlineData: {
+          mimeType: mimeType,
+          data: base64Data
+        }
+      });
+      messageParts.push({
+        text: text || 'Bu dosyayı analiz et ve tanımla.'
+      });
+    } else {
+      messageParts.push({ text: text });
+    }
+
+    history.push({ role: 'user', parts: messageParts });
+
+    // Clear file after sending
+    uploadedFile = null;
+    uploadedFileBase64 = null;
+    document.getElementById('fileInput').value = '';
+    document.getElementById('userInput').placeholder = 'Mesaj yaz...';
 
     addTyping();
 
@@ -506,14 +574,14 @@
 
     try {
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             system_instruction: { parts: [{ text: systemText }] },
             contents: history,
-            generationConfig: { maxOutputTokens: 1024, temperature: 0.8 }
+            generationConfig: { maxOutputTokens: 2048, temperature: 0.8 }
           })
         }
       );
@@ -522,21 +590,74 @@
       document.getElementById('typing')?.remove();
 
       if (data.error) {
-        const errMsg = '❌ Hata: ' + (data.error.message || JSON.stringify(data.error));
-        addMsg('bot', errMsg);
+        addMsg('bot', '❌ Hata: ' + data.error.message);
       } else {
-        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '(boş yanıt)';
+        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '(boş)';
         history.push({ role: 'model', parts: [{ text: reply }] });
         addMsg('bot', reply);
       }
     } catch (err) {
       document.getElementById('typing')?.remove();
-      addMsg('bot', '❌ Bağlantı hatası: ' + err.message);
+      addMsg('bot', '❌ Hata: ' + err.message);
     }
 
     document.getElementById('sendBtn').disabled = false;
+    document.getElementById('fileBtn').disabled = false;
+    inputEl.focus();
+  }
+
+  async function generateImage(prompt) {
+    inputEl.value = '';
+    inputEl.style.height = 'auto';
+    document.getElementById('sendBtn').disabled = true;
+    document.getElementById('fileBtn').disabled = true;
+
+    addMsg('user', `çiz: ${prompt}`);
+    addTyping();
+
+    try {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: `Sen bir sanat ustasısın. "${prompt}" için detaylı bir SVG çiz. SADECE <svg>...</svg> çık, başka hiçbir metin yazma!`
+              }]
+            }],
+            generationConfig: { maxOutputTokens: 4096 }
+          })
+        }
+      );
+
+      const data = await res.json();
+      document.getElementById('typing')?.remove();
+
+      if (data.error) {
+        addMsg('bot', '❌ Hata: ' + data.error.message);
+      } else {
+        const svgText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        const svgMatch = svgText.match(/<svg[^>]*>[\s\S]*?<\/svg>/);
+        
+        if (svgMatch) {
+          const svgData = 'data:image/svg+xml;base64,' + btoa(svgMatch[0]);
+          addMsg('bot', { type: 'image', data: svgData });
+          addMsg('bot', '✨ Resim tamam!');
+        } else {
+          addMsg('bot', '❌ SVG oluşturulamadı, daha basit bir açıklama dene.');
+        }
+      }
+    } catch (err) {
+      document.getElementById('typing')?.remove();
+      addMsg('bot', '❌ Hata: ' + err.message);
+    }
+
+    document.getElementById('sendBtn').disabled = false;
+    document.getElementById('fileBtn').disabled = false;
     inputEl.focus();
   }
 </script>
 </body>
-  </html>
+</html>
