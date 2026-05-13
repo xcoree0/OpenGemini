@@ -372,7 +372,7 @@
 <div class="wrapper">
 
   <header>
-    <div class="logo">🎨</div>
+    <div class="logo">✦∞</div>
     <div>
       <h1>OpenGemini✦∞ Project by xcore</h1>
       <p>gemini-2.5-flash ✦ · limitsiz</p>
@@ -387,7 +387,7 @@
   </div>
 
   <div id="systemArea">
-    <label>Sistem</label>
+    <label>OpenGemini Tarzı</label>
     <textarea id="systemPrompt" placeholder="OpenGemini Tarzı">Samimi, yardımsever ve üretken bir OpenGemini modeli. Resim çizmek için "çiz: açıklama" yazınız.</textarea>
   </div>
 
@@ -458,7 +458,7 @@
     }
 
     uploadedFile = file;
-    const reader = new FileReader();
+    const reader = new FileReader()w;
     reader.onload = (event) => {
       uploadedFileBase64 = event.target.result;
       document.getElementById('userInput').placeholder = `📎 ${file.name} yüklendi`;
@@ -481,7 +481,7 @@
     document.getElementById('emptyState')?.remove();
     const div = document.createElement('div');
     div.className = `msg ${role}`;
-    const avatar = role === 'bot' ? '🎨' : '👤';
+    const avatar = role === 'bot' ? '✦∞' : '📨';
     
     let bubbleHTML = '';
     if (typeof content === 'string') {
